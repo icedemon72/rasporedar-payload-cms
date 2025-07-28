@@ -64,19 +64,26 @@ export type SupportedTimezones =
 export interface Config {
   auth: {
     users: UserAuthOperations;
+    'third-party-access': ThirdPartyAccessAuthOperations;
   };
   blocks: {};
   collections: {
+    pages: Page;
     users: User;
     media: Media;
+    'third-party-access': ThirdPartyAccess;
+    blogs: Blog;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {};
   collectionsSelect: {
+    pages: PagesSelect<false> | PagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    'third-party-access': ThirdPartyAccessSelect<false> | ThirdPartyAccessSelect<true>;
+    blogs: BlogsSelect<false> | BlogsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -84,12 +91,20 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
-  globals: {};
-  globalsSelect: {};
-  locale: null;
-  user: User & {
-    collection: 'users';
+  globals: {
+    'site-settings': SiteSetting;
   };
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+  };
+  locale: null;
+  user:
+    | (User & {
+        collection: 'users';
+      })
+    | (ThirdPartyAccess & {
+        collection: 'third-party-access';
+      });
   jobs: {
     tasks: unknown;
     workflows: unknown;
@@ -113,29 +128,71 @@ export interface UserAuthOperations {
     password: string;
   };
 }
+export interface ThirdPartyAccessAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "pages".
  */
-export interface User {
+export interface Page {
   id: string;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
+  title: string;
+  slug: string;
+  seo?: {
+    title?: string | null;
+    /**
+     * Maximum character length is 160
+     */
+    description?: string | null;
+    robots?: string | null;
+    /**
+     * Comma-separated keywords
+     */
+    keywords?: string | null;
+    openGraph?: {
+      images?: (string | null) | Media;
+    };
+  };
+  layout?:
     | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
+        backgroundImage: string | Media;
+        title: string;
+        subtitle?: string | null;
+        buttons?:
+          | {
+              label: string;
+              url: string;
+              style?: ('primary' | 'secondary') | null;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * Upload an SVG or image to use as icon
+         */
+        icon?: (string | null) | Media;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'hero';
       }[]
     | null;
-  password?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -158,11 +215,145 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  name: string;
+  roles?: ('admin' | 'editor' | 'user')[] | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "third-party-access".
+ */
+export interface ThirdPartyAccess {
+  id: string;
+  updatedAt: string;
+  createdAt: string;
+  enableAPIKey?: boolean | null;
+  apiKey?: string | null;
+  apiKeyIndex?: string | null;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogs".
+ */
+export interface Blog {
+  id: string;
+  title: string;
+  /**
+   * Unique URL slug for the blog post
+   */
+  slug: string;
+  /**
+   * Author of the blog post
+   */
+  author: string | User;
+  /**
+   * Featured image for the blog post
+   */
+  featuredImage?: (string | null) | Media;
+  /**
+   * Short summary or excerpt of the blog post
+   */
+  excerpt?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Add tags for categorization
+   */
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Date when the blog post was published
+   */
+  publishedDate: string;
+  /**
+   * Publication status
+   */
+  status: 'draft' | 'published' | 'archived';
+  /**
+   * Select related blog posts
+   */
+  relatedBlogs?: (string | Blog)[] | null;
+  seo?: {
+    title?: string | null;
+    /**
+     * Maximum character length is 160
+     */
+    description?: string | null;
+    robots?: string | null;
+    /**
+     * Comma-separated keywords
+     */
+    keywords?: string | null;
+    openGraph?: {
+      images?: (string | null) | Media;
+    };
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
   id: string;
   document?:
+    | ({
+        relationTo: 'pages';
+        value: string | Page;
+      } | null)
     | ({
         relationTo: 'users';
         value: string | User;
@@ -170,12 +361,25 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'third-party-access';
+        value: string | ThirdPartyAccess;
+      } | null)
+    | ({
+        relationTo: 'blogs';
+        value: string | Blog;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: string | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: string | User;
+      }
+    | {
+        relationTo: 'third-party-access';
+        value: string | ThirdPartyAccess;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -185,10 +389,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: string;
-  user: {
-    relationTo: 'users';
-    value: string | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: string | User;
+      }
+    | {
+        relationTo: 'third-party-access';
+        value: string | ThirdPartyAccess;
+      };
   key?: string | null;
   value?:
     | {
@@ -215,9 +424,56 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        robots?: T;
+        keywords?: T;
+        openGraph?:
+          | T
+          | {
+              images?: T;
+            };
+      };
+  layout?:
+    | T
+    | {
+        hero?:
+          | T
+          | {
+              backgroundImage?: T;
+              title?: T;
+              subtitle?: T;
+              buttons?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                    style?: T;
+                    id?: T;
+                  };
+              icon?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -255,6 +511,67 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "third-party-access_select".
+ */
+export interface ThirdPartyAccessSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  enableAPIKey?: T;
+  apiKey?: T;
+  apiKeyIndex?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogs_select".
+ */
+export interface BlogsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  author?: T;
+  featuredImage?: T;
+  excerpt?: T;
+  content?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  publishedDate?: T;
+  status?: T;
+  relatedBlogs?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        robots?: T;
+        keywords?: T;
+        openGraph?:
+          | T
+          | {
+              images?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents_select".
  */
 export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
@@ -284,6 +601,78 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: string;
+  siteName: string;
+  navigationBar: {
+    /**
+     * Logo image
+     */
+    logo?: (string | null) | Media;
+    /**
+     * Navbar title
+     */
+    title: string;
+    links?:
+      | {
+          label: string;
+          /**
+           * URL to navigate to (optional if dropdown)
+           */
+          url?: string | null;
+          /**
+           * Check if this link has nested links
+           */
+          isDropdown?: boolean | null;
+          links?:
+            | {
+                label: string;
+                url: string;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  navigationBar?:
+    | T
+    | {
+        logo?: T;
+        title?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              isDropdown?: T;
+              links?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

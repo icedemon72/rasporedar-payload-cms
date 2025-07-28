@@ -7,8 +7,12 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
-import { Users } from './collections/Users'
+import { Users } from './collections/Users/config'
+import { Blogs } from './collections/Blogs/config'
 import { Media } from './collections/Media'
+import { Pages } from './collections/Pages'
+import { ThirdPartyAccess } from './collections/ThirdPartyAccess'
+import { SiteSettings } from './collections/SiteSettings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -20,8 +24,19 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  collections: [
+    Pages,
+    Users,
+    Media,
+    ThirdPartyAccess,
+    Blogs
+  ],
+  globals: [
+    // @ts-ignore
+    SiteSettings,
+  ],
   editor: lexicalEditor(),
+  serverURL: process.env.SERVER_URL || 'http://localhost:5000',
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
@@ -29,9 +44,15 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
+  
   sharp,
   plugins: [
     payloadCloudPlugin(),
     // storage-adapter-placeholder
   ],
+  upload: {
+    limits: {
+      fileSize: 50 * 1024 * 1024, // 50 MB
+    },
+  },
 })
