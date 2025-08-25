@@ -1,5 +1,6 @@
 import { Block } from "payload";
 import Button from "@/fields/Button";
+import Priority from "@/fields/Priority";
 
 const Hero: Block = {
   slug: 'hero',
@@ -8,6 +9,7 @@ const Hero: Block = {
     plural: 'Hero Sections',
   },
   fields: [
+    Priority,
     {
       name: 'backgroundImage',
       type: 'upload',

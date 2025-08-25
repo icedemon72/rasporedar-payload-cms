@@ -7,11 +7,13 @@ type BlogDoc = {
 
 export const removeRelatedFields: CollectionAfterReadHook = async ({ doc }: { doc: BlogDoc }) => {
   if (doc.relatedBlogs && Array.isArray(doc.relatedBlogs)) {
-    doc.relatedBlogs = doc.relatedBlogs.map(({ content, seo, ...rest }) => rest);
+    doc.relatedBlogs = doc.relatedBlogs.map(({ content, seo, featuredImage, ...rest }) => ({
+      ...rest,
+      featuredImage, // explicitly keep featuredImage
+    }));
   }
   return doc;
-}
-
+};
 export const rewriteAuthor: CollectionAfterReadHook = async ({ doc }: { doc: BlogDoc }) => {
   if (doc.author && doc.author?.name) {
     doc.author = doc.author.name;

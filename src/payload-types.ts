@@ -170,26 +170,156 @@ export interface Page {
     };
   };
   layout?:
-    | {
-        backgroundImage: string | Media;
-        title: string;
-        subtitle?: string | null;
-        buttons?:
-          | {
-              label: string;
-              url: string;
-              style?: ('primary' | 'secondary') | null;
-              id?: string | null;
-            }[]
-          | null;
-        /**
-         * Upload an SVG or image to use as icon
-         */
-        icon?: (string | null) | Media;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'hero';
-      }[]
+    | (
+        | {
+            /**
+             * Mark whether this block is above or below the fold
+             */
+            priority: 'above' | 'below';
+            title: string;
+            description?: string | null;
+            buttons?:
+              | {
+                  label: string;
+                  url: string;
+                  style?: ('primary' | 'secondary') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'call-to-action';
+          }
+        | {
+            /**
+             * Mark whether this block is above or below the fold
+             */
+            priority: 'above' | 'below';
+            items?:
+              | {
+                  question: string;
+                  answer: {
+                    root: {
+                      type: string;
+                      children: {
+                        type: string;
+                        version: number;
+                        [k: string]: unknown;
+                      }[];
+                      direction: ('ltr' | 'rtl') | null;
+                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                      indent: number;
+                      version: number;
+                    };
+                    [k: string]: unknown;
+                  };
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'accordion';
+          }
+        | {
+            /**
+             * Mark whether this block is above or below the fold
+             */
+            priority: 'above' | 'below';
+            sectionTitle?: string | null;
+            features?:
+              | {
+                  icon?: (string | null) | Media;
+                  title: string;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'feature-list';
+          }
+        | {
+            /**
+             * Mark whether this block is above or below the fold
+             */
+            priority: 'above' | 'below';
+            backgroundImage: string | Media;
+            title: string;
+            subtitle?: string | null;
+            buttons?:
+              | {
+                  label: string;
+                  url: string;
+                  style?: ('primary' | 'secondary') | null;
+                  id?: string | null;
+                }[]
+              | null;
+            /**
+             * Upload an SVG or image to use as icon
+             */
+            icon?: (string | null) | Media;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero';
+          }
+        | {
+            /**
+             * Mark whether this block is above or below the fold
+             */
+            priority: 'above' | 'below';
+            imagePosition: 'left' | 'right';
+            image: string | Media;
+            title?: string | null;
+            content?: {
+              root: {
+                type: string;
+                children: {
+                  type: string;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'image-text';
+          }
+        | {
+            /**
+             * Mark whether this block is above or below the fold
+             */
+            priority: 'above' | 'below';
+            title?: string | null;
+            images?:
+              | {
+                  image: string | Media;
+                  caption?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'media-gallery';
+          }
+        | {
+            /**
+             * Mark whether this block is above or below the fold
+             */
+            priority: 'above' | 'below';
+            quote: string;
+            author: string;
+            role?: string | null;
+            avatar?: (string | null) | Media;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'testimonial';
+          }
+      )[]
     | null;
   updatedAt: string;
   createdAt: string;
@@ -445,9 +575,57 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        'call-to-action'?:
+          | T
+          | {
+              priority?: T;
+              title?: T;
+              description?: T;
+              buttons?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                    style?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        accordion?:
+          | T
+          | {
+              priority?: T;
+              items?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        'feature-list'?:
+          | T
+          | {
+              priority?: T;
+              sectionTitle?: T;
+              features?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
         hero?:
           | T
           | {
+              priority?: T;
               backgroundImage?: T;
               title?: T;
               subtitle?: T;
@@ -460,6 +638,43 @@ export interface PagesSelect<T extends boolean = true> {
                     id?: T;
                   };
               icon?: T;
+              id?: T;
+              blockName?: T;
+            };
+        'image-text'?:
+          | T
+          | {
+              priority?: T;
+              imagePosition?: T;
+              image?: T;
+              title?: T;
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        'media-gallery'?:
+          | T
+          | {
+              priority?: T;
+              title?: T;
+              images?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        testimonial?:
+          | T
+          | {
+              priority?: T;
+              quote?: T;
+              author?: T;
+              role?: T;
+              avatar?: T;
               id?: T;
               blockName?: T;
             };

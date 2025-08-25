@@ -1,7 +1,13 @@
 import { type CollectionConfig } from 'payload';
 import Hero from '../blocks/Hero';
+import FAQ from '../blocks/FAQ';
+import FeatureList from '@/blocks/FeatureList';
 import SEO from '../fields/SEO';
 import { apiKeyAccess } from '@/utils/auth';
+import CallToAction from '@/blocks/CallToAction';
+import ImageText from '@/blocks/ImageText';
+import MediaGallery from '@/blocks/MediaGallery';
+import Testimonial from '@/blocks/Testimonial';
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -27,7 +33,15 @@ export const Pages: CollectionConfig = {
     {
       name: 'layout',
       type: 'blocks',
-      blocks: [Hero],
+      blocks: [
+        CallToAction,
+        FAQ,
+        FeatureList,
+        Hero,
+        ImageText,
+        MediaGallery,
+        Testimonial
+      ],
     },
   ],
 };
