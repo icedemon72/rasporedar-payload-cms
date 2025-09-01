@@ -186,9 +186,71 @@ export interface Page {
                   id?: string | null;
                 }[]
               | null;
+            backgroundImage: string | Media;
+            cards?:
+              | {
+                  title: string;
+                  description?: string | null;
+                  image: string | Media;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'call-to-action';
+          }
+        | {
+            title: string;
+            description: {
+              root: {
+                type: string;
+                children: {
+                  type: string;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            accordion?:
+              | {
+                  /**
+                   * Mark whether this block is above or below the fold
+                   */
+                  priority: 'above' | 'below';
+                  items?:
+                    | {
+                        question: string;
+                        answer: {
+                          root: {
+                            type: string;
+                            children: {
+                              type: string;
+                              version: number;
+                              [k: string]: unknown;
+                            }[];
+                            direction: ('ltr' | 'rtl') | null;
+                            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                            indent: number;
+                            version: number;
+                          };
+                          [k: string]: unknown;
+                        };
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'accordion';
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq';
           }
         | {
             /**
@@ -311,13 +373,36 @@ export interface Page {
              * Mark whether this block is above or below the fold
              */
             priority: 'above' | 'below';
-            quote: string;
-            author: string;
-            role?: string | null;
-            avatar?: (string | null) | Media;
+            title?: string | null;
+            description?: string | null;
+            testimonials: {
+              quote: string;
+              author: string;
+              role?: string | null;
+              avatar?: (string | null) | Media;
+              id?: string | null;
+            }[];
             id?: string | null;
             blockName?: string | null;
             blockType: 'testimonial';
+          }
+        | {
+            /**
+             * Mark whether this block is above or below the fold
+             */
+            priority: 'above' | 'below';
+            title?: string | null;
+            description?: string | null;
+            card_links: {
+              title: string;
+              description?: string | null;
+              image: string | Media;
+              url: string;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'card_link';
           }
       )[]
     | null;
@@ -589,6 +674,41 @@ export interface PagesSelect<T extends boolean = true> {
                     style?: T;
                     id?: T;
                   };
+              backgroundImage?: T;
+              cards?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    image?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        faq?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              accordion?:
+                | T
+                | {
+                    accordion?:
+                      | T
+                      | {
+                          priority?: T;
+                          items?:
+                            | T
+                            | {
+                                question?: T;
+                                answer?: T;
+                                id?: T;
+                              };
+                          id?: T;
+                          blockName?: T;
+                        };
+                  };
               id?: T;
               blockName?: T;
             };
@@ -671,10 +791,35 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               priority?: T;
-              quote?: T;
-              author?: T;
-              role?: T;
-              avatar?: T;
+              title?: T;
+              description?: T;
+              testimonials?:
+                | T
+                | {
+                    quote?: T;
+                    author?: T;
+                    role?: T;
+                    avatar?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        card_link?:
+          | T
+          | {
+              priority?: T;
+              title?: T;
+              description?: T;
+              card_links?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    image?: T;
+                    url?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -855,6 +1000,41 @@ export interface SiteSetting {
         }[]
       | null;
   };
+  footer: {
+    buttonSection: {
+      title?: string | null;
+      button: {
+        label: string;
+        url: string;
+      };
+    };
+    linksSection?:
+      | {
+          label: string;
+          url: string;
+          id?: string | null;
+        }[]
+      | null;
+    contactSection?:
+      | {
+          icon: string | Media;
+          title: string;
+          subtitle?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * e.g. © 2025 Your Company. All rights reserved.
+     */
+    copyright?: string | null;
+    staticPages?:
+      | {
+          label: string;
+          page: string | Page;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -882,6 +1062,44 @@ export interface SiteSettingsSelect<T extends boolean = true> {
                     url?: T;
                     id?: T;
                   };
+              id?: T;
+            };
+      };
+  footer?:
+    | T
+    | {
+        buttonSection?:
+          | T
+          | {
+              title?: T;
+              button?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                  };
+            };
+        linksSection?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
+        contactSection?:
+          | T
+          | {
+              icon?: T;
+              title?: T;
+              subtitle?: T;
+              id?: T;
+            };
+        copyright?: T;
+        staticPages?:
+          | T
+          | {
+              label?: T;
+              page?: T;
               id?: T;
             };
       };

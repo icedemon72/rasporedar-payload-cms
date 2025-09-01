@@ -11,6 +11,7 @@ const Hero: Block = {
   fields: [
     Priority,
     {
+      label: 'Background Image',
       name: 'backgroundImage',
       type: 'upload',
       relationTo: 'media',

@@ -1,31 +1,33 @@
-import Priority from "@/fields/Priority";
 import { Block } from "payload";
+import Accordion from "./Accordion";
 
-const Accordion: Block = {
-  slug: 'accordion',
+const FAQ: Block = {
+  slug: 'faq',
   labels: {
-    singular: 'Accordion',
-    plural: 'Accordions',
+    singular: 'FAQ',
+    plural: 'FAQs',
   },
   fields: [
-    Priority,
     {
-      name: 'items',
-      type: 'array',
-      fields: [
-        {
-          name: 'question',
-          type: 'text',
-          required: true,
-        },
-        {
-          name: 'answer',
-          type: 'richText',
-          required: true,
-        },
+      name: 'title',
+      type: 'text',
+      required: true
+    },
+    {
+      name: 'description',
+      type: 'richText',
+      required: true
+    },
+    {
+      name: 'accordion',
+      type: 'blocks',
+      minRows: 1,
+      maxRows: 1,
+      blocks: [
+        Accordion,
       ],
     },
   ],
 };
 
-export default Accordion;
+export default FAQ;

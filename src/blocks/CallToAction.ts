@@ -24,6 +24,36 @@ const CallToAction: Block = {
       type: 'array',
       fields: Button,
     },
+    {
+      label: 'Background Image',
+      name: 'backgroundImage',
+      type: 'upload',
+      relationTo: 'media',
+      required: true
+    },
+    {
+      name: 'cards',
+      type: 'array',
+      required: false,
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true
+        },
+        {
+          name: 'description',
+          type: 'text',
+          required: false
+        },
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+        },
+      ]
+    }
   ],
 };
 

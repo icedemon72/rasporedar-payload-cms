@@ -8,6 +8,8 @@ import CallToAction from '@/blocks/CallToAction';
 import ImageText from '@/blocks/ImageText';
 import MediaGallery from '@/blocks/MediaGallery';
 import Testimonial from '@/blocks/Testimonial';
+import CardLinks from '@/blocks/CardLinks';
+import Accordion from '@/blocks/Accordion';
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -36,11 +38,13 @@ export const Pages: CollectionConfig = {
       blocks: [
         CallToAction,
         FAQ,
+        Accordion,
         FeatureList,
         Hero,
         ImageText,
         MediaGallery,
-        Testimonial
+        Testimonial,
+        CardLinks
       ],
     },
   ],

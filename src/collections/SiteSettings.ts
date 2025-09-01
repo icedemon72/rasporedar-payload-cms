@@ -1,3 +1,4 @@
+import { Footer } from '@/fields/Footer';
 import { NavigationBar } from '@/fields/NavigationBar';
 import { apiKeyAccess } from '@/utils/auth';
 import { type CollectionConfig } from 'payload';
@@ -24,6 +25,7 @@ export const SiteSettings: CollectionConfig = {
       type: 'text',
       required: true,
     },
-    NavigationBar
+    NavigationBar,
+    Footer,
   ],
 };

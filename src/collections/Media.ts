@@ -15,4 +15,7 @@ export const Media: CollectionConfig = {
   upload: {
     staticDir: '/media',
   },
+  custom: {
+    cacheControl: 'public, max-age=3600, stale-while-revalidate=3600, stale-if-error=86400',
+  },
 }
