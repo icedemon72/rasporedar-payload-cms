@@ -73,6 +73,7 @@ export interface Config {
     media: Media;
     'third-party-access': ThirdPartyAccess;
     blogs: Blog;
+    contact: Contact;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -84,6 +85,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     'third-party-access': ThirdPartyAccessSelect<false> | ThirdPartyAccessSelect<true>;
     blogs: BlogsSelect<false> | BlogsSelect<true>;
+    contact: ContactSelect<false> | ContactSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -172,32 +174,55 @@ export interface Page {
   layout?:
     | (
         | {
-            /**
-             * Mark whether this block is above or below the fold
-             */
-            priority: 'above' | 'below';
-            title: string;
-            description?: string | null;
-            buttons?:
+            title?: string | null;
+            subtitle?: {
+              root: {
+                type: string;
+                children: {
+                  type: string;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            icons?:
               | {
-                  label: string;
-                  url: string;
-                  style?: ('primary' | 'secondary') | null;
+                  /**
+                   * Upload an SVG or image to use as icon
+                   */
+                  icon: string | Media;
+                  text: {
+                    root: {
+                      type: string;
+                      children: {
+                        type: string;
+                        version: number;
+                        [k: string]: unknown;
+                      }[];
+                      direction: ('ltr' | 'rtl') | null;
+                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                      indent: number;
+                      version: number;
+                    };
+                    [k: string]: unknown;
+                  };
                   id?: string | null;
                 }[]
               | null;
-            backgroundImage: string | Media;
-            cards?:
+            tags?:
               | {
-                  title: string;
-                  description?: string | null;
-                  image: string | Media;
+                  text: string;
                   id?: string | null;
                 }[]
               | null;
             id?: string | null;
             blockName?: string | null;
-            blockType: 'call-to-action';
+            blockType: 'contact-form';
           }
         | {
             title: string;
@@ -251,6 +276,39 @@ export interface Page {
             id?: string | null;
             blockName?: string | null;
             blockType: 'faq';
+          }
+        | {
+            title?: string | null;
+            groups?:
+              | {
+                  title: string;
+                  faqs?:
+                    | {
+                        question: string;
+                        answer: {
+                          root: {
+                            type: string;
+                            children: {
+                              type: string;
+                              version: number;
+                              [k: string]: unknown;
+                            }[];
+                            direction: ('ltr' | 'rtl') | null;
+                            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                            indent: number;
+                            version: number;
+                          };
+                          [k: string]: unknown;
+                        };
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq-list';
           }
         | {
             /**
@@ -403,6 +461,26 @@ export interface Page {
             id?: string | null;
             blockName?: string | null;
             blockType: 'card_link';
+          }
+        | {
+            text: {
+              root: {
+                type: string;
+                children: {
+                  type: string;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'wysiwyg';
           }
       )[]
     | null;
@@ -560,6 +638,20 @@ export interface Blog {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact".
+ */
+export interface Contact {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  reason: string;
+  message: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -584,6 +676,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'blogs';
         value: string | Blog;
+      } | null)
+    | ({
+        relationTo: 'contact';
+        value: string | Contact;
       } | null);
   globalSlug?: string | null;
   user:
@@ -660,27 +756,22 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
-        'call-to-action'?:
+        'contact-form'?:
           | T
           | {
-              priority?: T;
               title?: T;
-              description?: T;
-              buttons?:
+              subtitle?: T;
+              icons?:
                 | T
                 | {
-                    label?: T;
-                    url?: T;
-                    style?: T;
+                    icon?: T;
+                    text?: T;
                     id?: T;
                   };
-              backgroundImage?: T;
-              cards?:
+              tags?:
                 | T
                 | {
-                    title?: T;
-                    description?: T;
-                    image?: T;
+                    text?: T;
                     id?: T;
                   };
               id?: T;
@@ -708,6 +799,26 @@ export interface PagesSelect<T extends boolean = true> {
                           id?: T;
                           blockName?: T;
                         };
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        'faq-list'?:
+          | T
+          | {
+              title?: T;
+              groups?:
+                | T
+                | {
+                    title?: T;
+                    faqs?:
+                      | T
+                      | {
+                          question?: T;
+                          answer?: T;
+                          id?: T;
+                        };
+                    id?: T;
                   };
               id?: T;
               blockName?: T;
@@ -823,6 +934,13 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        wysiwyg?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
@@ -932,6 +1050,19 @@ export interface BlogsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact_select".
+ */
+export interface ContactSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  phone?: T;
+  reason?: T;
+  message?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents_select".
  */
 export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
@@ -1000,6 +1131,31 @@ export interface SiteSetting {
         }[]
       | null;
   };
+  'call-to-action': {
+    /**
+     * Mark whether this block is above or below the fold
+     */
+    priority: 'above' | 'below';
+    title: string;
+    description?: string | null;
+    buttons?:
+      | {
+          label: string;
+          url: string;
+          style?: ('primary' | 'secondary') | null;
+          id?: string | null;
+        }[]
+      | null;
+    backgroundImage: string | Media;
+    cards?:
+      | {
+          title: string;
+          description?: string | null;
+          image: string | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
   footer: {
     buttonSection: {
       title?: string | null;
@@ -1062,6 +1218,30 @@ export interface SiteSettingsSelect<T extends boolean = true> {
                     url?: T;
                     id?: T;
                   };
+              id?: T;
+            };
+      };
+  'call-to-action'?:
+    | T
+    | {
+        priority?: T;
+        title?: T;
+        description?: T;
+        buttons?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              style?: T;
+              id?: T;
+            };
+        backgroundImage?: T;
+        cards?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              image?: T;
               id?: T;
             };
       };

@@ -1,3 +1,4 @@
+import { CTA } from '@/fields/CTA';
 import { Footer } from '@/fields/Footer';
 import { NavigationBar } from '@/fields/NavigationBar';
 import { apiKeyAccess } from '@/utils/auth';
@@ -26,6 +27,7 @@ export const SiteSettings: CollectionConfig = {
       required: true,
     },
     NavigationBar,
+    CTA,
     Footer,
   ],
 };

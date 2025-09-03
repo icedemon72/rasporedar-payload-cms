@@ -4,12 +4,15 @@ import FAQ from '../blocks/FAQ';
 import FeatureList from '@/blocks/FeatureList';
 import SEO from '../fields/SEO';
 import { apiKeyAccess } from '@/utils/auth';
-import CallToAction from '@/blocks/CallToAction';
+// import CallToAction from '@/blocks/CallToAction';
 import ImageText from '@/blocks/ImageText';
 import MediaGallery from '@/blocks/MediaGallery';
 import Testimonial from '@/blocks/Testimonial';
 import CardLinks from '@/blocks/CardLinks';
 import Accordion from '@/blocks/Accordion';
+import FAQList from '@/blocks/FAQList';
+import WYSIWYG from '@/blocks/WYSIWYG';
+import ContactForm from '@/blocks/ContactForm';
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -36,16 +39,19 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       type: 'blocks',
       blocks: [
-        CallToAction,
+        // CallToAction,
+        ContactForm,
         FAQ,
+        FAQList,
         Accordion,
         FeatureList,
         Hero,
         ImageText,
         MediaGallery,
         Testimonial,
-        CardLinks
+        CardLinks,
+        WYSIWYG
       ],
     },
   ],
-};
+}

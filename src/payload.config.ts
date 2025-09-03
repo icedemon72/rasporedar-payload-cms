@@ -9,6 +9,7 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users/config'
 import { Blogs } from './collections/Blogs/config'
+import { Contact } from './collections/Contact/config'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { ThirdPartyAccess } from './collections/ThirdPartyAccess'
@@ -29,7 +30,8 @@ export default buildConfig({
     Users,
     Media,
     ThirdPartyAccess,
-    Blogs
+    Blogs,
+    Contact
   ],
   globals: [
     // @ts-ignore
