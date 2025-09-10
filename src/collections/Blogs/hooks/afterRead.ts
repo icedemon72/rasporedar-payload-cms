@@ -14,6 +14,7 @@ export const removeRelatedFields: CollectionAfterReadHook = async ({ doc }: { do
   }
   return doc;
 };
+
 export const rewriteAuthor: CollectionAfterReadHook = async ({ doc }: { doc: BlogDoc }) => {
   if (doc.author && doc.author?.name) {
     doc.author = doc.author.name;

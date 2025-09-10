@@ -14,6 +14,7 @@ import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { ThirdPartyAccess } from './collections/ThirdPartyAccess'
 import { SiteSettings } from './collections/SiteSettings'
+import { News } from './collections/News/config'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -31,6 +32,7 @@ export default buildConfig({
     Media,
     ThirdPartyAccess,
     Blogs,
+    News,
     Contact
   ],
   globals: [

@@ -73,6 +73,7 @@ export interface Config {
     media: Media;
     'third-party-access': ThirdPartyAccess;
     blogs: Blog;
+    news: News;
     contact: Contact;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -85,6 +86,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     'third-party-access': ThirdPartyAccessSelect<false> | ThirdPartyAccessSelect<true>;
     blogs: BlogsSelect<false> | BlogsSelect<true>;
+    news: NewsSelect<false> | NewsSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -638,6 +640,79 @@ export interface Blog {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news".
+ */
+export interface News {
+  id: string;
+  title: string;
+  /**
+   * Unique URL slug for the news post
+   */
+  slug: string;
+  /**
+   * Author of the news post
+   */
+  author: string | User;
+  /**
+   * Featured image for the news post
+   */
+  featuredImage?: (string | null) | Media;
+  /**
+   * Short summary or excerpt of the news post
+   */
+  excerpt?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Add tags for categorization
+   */
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Date when the news post was published
+   */
+  publishedDate: string;
+  /**
+   * Publication status
+   */
+  status: 'draft' | 'published' | 'archived';
+  seo?: {
+    title?: string | null;
+    /**
+     * Maximum character length is 160
+     */
+    description?: string | null;
+    robots?: string | null;
+    /**
+     * Comma-separated keywords
+     */
+    keywords?: string | null;
+    openGraph?: {
+      images?: (string | null) | Media;
+    };
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contact".
  */
 export interface Contact {
@@ -676,6 +751,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'blogs';
         value: string | Blog;
+      } | null)
+    | ({
+        relationTo: 'news';
+        value: string | News;
       } | null)
     | ({
         relationTo: 'contact';
@@ -1032,6 +1111,41 @@ export interface BlogsSelect<T extends boolean = true> {
   publishedDate?: T;
   status?: T;
   relatedBlogs?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        robots?: T;
+        keywords?: T;
+        openGraph?:
+          | T
+          | {
+              images?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news_select".
+ */
+export interface NewsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  author?: T;
+  featuredImage?: T;
+  excerpt?: T;
+  content?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  publishedDate?: T;
+  status?: T;
   seo?:
     | T
     | {
