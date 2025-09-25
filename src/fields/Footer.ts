@@ -98,9 +98,7 @@ export const Footer: Field = {
         },
         {
           name: 'page',
-          type: 'relationship',
-          relationTo: 'pages',
-          required: true,
+          type: 'text',
         },
       ],
     },

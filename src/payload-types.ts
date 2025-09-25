@@ -1300,7 +1300,7 @@ export interface SiteSetting {
     staticPages?:
       | {
           label: string;
-          page: string | Page;
+          page?: string | null;
           id?: string | null;
         }[]
       | null;
